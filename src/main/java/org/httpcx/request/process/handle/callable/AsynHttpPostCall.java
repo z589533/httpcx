@@ -11,6 +11,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.util.EntityUtils;
+import org.httpcx.request.HttpBase;
 
 /**
  * @date 2016年5月23日 下午5:57:14
@@ -39,7 +40,7 @@ public class AsynHttpPostCall implements Callable<String> {
 		try {
 			response = httpClient.execute(httpPost, HttpClientContext.create());
 			HttpEntity entity = response.getEntity();
-			info = EntityUtils.toString(entity, "utf-8");
+			info = EntityUtils.toString(entity, HttpBase.DEFAULTCHARSET);
 			EntityUtils.consume(entity);
 			return info;
 		} catch (Exception e) {

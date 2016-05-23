@@ -63,6 +63,8 @@ public class HttpCxClient implements Http {
 
 	public final static Logger logger = LoggerFactory.getLogger(HttpCxClient.class);
 
+	ExecutorService executorService = Executors.newFixedThreadPool(500);
+
 	private static void config(HttpAttribute attribute, HttpRequestBase httpRequestBase) {
 		httpRequestBase.setHeader("User-Agent", attribute.getUser_Agent());
 		httpRequestBase.setHeader("Accept", attribute.getAccept());
@@ -79,7 +81,6 @@ public class HttpCxClient implements Http {
 		CloseableHttpClient closeableHttpClient = buildHttp(url);
 		long start = System.currentTimeMillis();
 		try {
-			ExecutorService executorService = Executors.newFixedThreadPool(1);
 			CountDownLatch countDownLatch = new CountDownLatch(1);
 			HttpPost httpPost = new HttpPost(url);
 			List<NameValuePair> pairs = new ArrayList<NameValuePair>();
@@ -112,7 +113,6 @@ public class HttpCxClient implements Http {
 		CloseableHttpClient closeableHttpClient = buildHttp(url);
 		long start = System.currentTimeMillis();
 		try {
-			ExecutorService executorService = Executors.newFixedThreadPool(1);
 			CountDownLatch countDownLatch = new CountDownLatch(1);
 			HttpPost httpPost = new HttpPost(url);
 			List<NameValuePair> pairs = new ArrayList<NameValuePair>();
@@ -142,7 +142,7 @@ public class HttpCxClient implements Http {
 		CloseableHttpClient closeableHttpClient = buildHttp(url);
 		long start = System.currentTimeMillis();
 		try {
-			ExecutorService executorService = Executors.newFixedThreadPool(1);
+
 			CountDownLatch countDownLatch = new CountDownLatch(1);
 			HttpGet httpGet = new HttpGet(url);
 			HttpCxClient.config(attribute, httpGet);
@@ -163,7 +163,6 @@ public class HttpCxClient implements Http {
 		CloseableHttpClient closeableHttpClient = buildHttp(url);
 		long start = System.currentTimeMillis();
 		try {
-			ExecutorService executorService = Executors.newFixedThreadPool(1);
 			CountDownLatch countDownLatch = new CountDownLatch(1);
 			HttpGet httpGet = new HttpGet(url);
 			HttpAttribute attribute = HttpAttribute.custom().setConnectTimeout(6000).build();
@@ -186,7 +185,6 @@ public class HttpCxClient implements Http {
 		CloseableHttpClient closeableHttpClient = buildHttp(url);
 		long start = System.currentTimeMillis();
 		try {
-			ExecutorService executorService = Executors.newFixedThreadPool(1);
 			CountDownLatch countDownLatch = new CountDownLatch(1);
 			HttpPost httpPost = new HttpPost(url);
 			List<NameValuePair> pairs = new ArrayList<NameValuePair>();
@@ -221,7 +219,6 @@ public class HttpCxClient implements Http {
 		CloseableHttpClient closeableHttpClient = buildHttp(url);
 		long start = System.currentTimeMillis();
 		try {
-			ExecutorService executorService = Executors.newFixedThreadPool(1);
 			CountDownLatch countDownLatch = new CountDownLatch(1);
 			HttpGet httpGet = new HttpGet(url);
 			HttpAttribute attribute = HttpAttribute.custom().setConnectTimeout(6000).build();

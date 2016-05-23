@@ -9,6 +9,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.util.EntityUtils;
+import org.httpcx.request.HttpBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,7 +41,7 @@ public class AsynHttpGetHandle implements Runnable {
 		try {
 			response = httpClient.execute(httpGet, HttpClientContext.create());
 			HttpEntity entity = response.getEntity();
-			String info = EntityUtils.toString(entity, "utf-8");
+			String info = EntityUtils.toString(entity, HttpBase.DEFAULTCHARSET);
 			EntityUtils.consume(entity);
 			logger.info("Thread:" + Thread.currentThread().getName() + " info:" + info);
 		} catch (IOException e) {

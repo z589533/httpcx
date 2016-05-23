@@ -23,6 +23,12 @@ public class HttpAttribute {
 
 	private int connectTimeout = 5000;
 
+	private String connection="keep-alive";
+	
+	private String accept_Encoding="gzip, deflate";
+	
+	private String cache_Control="max-age=0";
+	
 	public HttpAttribute() {
 		// TODO Auto-generated constructor stub
 	}
@@ -44,7 +50,49 @@ public class HttpAttribute {
 		this.accept_Charset = accept_Charset;
 		this.connectTimeout = connectTimeout;
 	}
+	
+	
 
+
+	public HttpAttribute(String user_Agent, String accept, String accept_Language, String accept_Charset,
+			int connectTimeout, String connection, String accept_Encoding, String cache_Control) {
+		super();
+		this.user_Agent = user_Agent;
+		this.accept = accept;
+		this.accept_Language = accept_Language;
+		this.accept_Charset = accept_Charset;
+		this.connectTimeout = connectTimeout;
+		this.connection = connection;
+		this.accept_Encoding = accept_Encoding;
+		this.cache_Control = cache_Control;
+	}
+
+	
+	
+	
+	public String getConnection() {
+		return connection;
+	}
+
+	public void setConnection(String connection) {
+		this.connection = connection;
+	}
+
+	public String getAccept_Encoding() {
+		return accept_Encoding;
+	}
+
+	public void setAccept_Encoding(String accept_Encoding) {
+		this.accept_Encoding = accept_Encoding;
+	}
+
+	public String getCache_Control() {
+		return cache_Control;
+	}
+
+	public void setCache_Control(String cache_Control) {
+		this.cache_Control = cache_Control;
+	}
 
 	public static HttpAttribute.Builder custom() {
 		return new Builder();
@@ -100,6 +148,12 @@ public class HttpAttribute {
 		private String accept_Charset;
 
 		private int connectTimeout;
+		
+		private String connection;
+		
+		private String accept_Encoding;
+		
+		private String cache_Control;
 
 		Builder() {
 			super();
@@ -107,7 +161,7 @@ public class HttpAttribute {
 		}
 
 		public HttpAttribute build() {
-			return new HttpAttribute(user_Agent, accept, accept_Language, accept_Charset, connectTimeout);
+			return new HttpAttribute(user_Agent, accept, accept_Language, accept_Charset, connectTimeout,connection,accept_Encoding,cache_Control);
 		}
 
 		public Builder setUser_Agent(String user_Agent) {
@@ -132,6 +186,21 @@ public class HttpAttribute {
 
 		public Builder setConnectTimeout(int connectTimeout) {
 			this.connectTimeout = connectTimeout;
+			return this;
+		}
+
+		public Builder setConnection(String connection) {
+			this.connection = connection;
+			return this;
+		}
+
+		public Builder setAccept_Encoding(String accept_Encoding) {
+			this.accept_Encoding = accept_Encoding;
+			return this;
+		}
+
+		public Builder setCache_Control(String cache_Control) {
+			this.cache_Control = cache_Control;
 			return this;
 		}
 

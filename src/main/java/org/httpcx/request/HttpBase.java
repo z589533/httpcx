@@ -15,8 +15,9 @@ public interface HttpBase {
 	 
 	 int HTTP_MAXPERROUTE=50;//将目标主机的最大连接数增加到50
 	 
-	 int HTTP_RETRY_COUNT=5;//重试次数
+	 int RETRYCOUNT=5;//重试次数
 	 
-	 int RETRYCOUNT=5;
+	 String DEFAULTCHARSET="utf-8";
+	 
 	
 }
