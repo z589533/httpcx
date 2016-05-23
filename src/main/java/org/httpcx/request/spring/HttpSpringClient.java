@@ -7,8 +7,9 @@ package org.httpcx.request.spring;
  * @parameter
  * @return
  */
-public class HttpSpringClient {
+public interface HttpSpringClient {
 	/**
 	 * method
 	 */
+	
 }
