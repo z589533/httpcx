@@ -1,49 +1,48 @@
-package org.httpcx.request.process.handle;
+package org.httpcx.request.process.handle.callable;
 
 import java.io.IOException;
+import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.util.EntityUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
- * @date 2016年5月23日 下午5:17:14
+ * @date 2016年5月23日 下午5:57:14
  * @version 1.0
  * @describe
  * @author zhouchengzhuo
  * @parameter
  * @return
  */
-public class AsynHttpGetHandle implements Runnable {
-
-	public final static Logger logger = LoggerFactory.getLogger(AsynHttpGetHandle.class);
+public class AsynHttpPostCall implements Callable<String> {
 
 	private CountDownLatch countDownLatch;
 	private final CloseableHttpClient httpClient;
-	private final HttpGet httpGet;
+	private final HttpPost httpPost;
 
-	public AsynHttpGetHandle(CloseableHttpClient httpClient, HttpGet httpGet, CountDownLatch countDownLatch) {
+	public AsynHttpPostCall(CloseableHttpClient httpClient, HttpPost httpPost, CountDownLatch countDownLatch) {
 		this.httpClient = httpClient;
-		this.httpGet = httpGet;
+		this.httpPost = httpPost;
 		this.countDownLatch = countDownLatch;
-	}
+	};
 
-	public void run() {
+	public String call() throws Exception {
 		// TODO Auto-generated method stub
+		String info = null;
 		CloseableHttpResponse response = null;
 		try {
-			response = httpClient.execute(httpGet, HttpClientContext.create());
+			response = httpClient.execute(httpPost, HttpClientContext.create());
 			HttpEntity entity = response.getEntity();
-			String info = EntityUtils.toString(entity, "utf-8");
+			info = EntityUtils.toString(entity, "utf-8");
 			EntityUtils.consume(entity);
-			logger.info("Thread:" + Thread.currentThread().getName() + " info:" + info);
-		} catch (IOException e) {
+			return info;
+		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
 			countDownLatch.countDown();
@@ -54,8 +53,11 @@ public class AsynHttpGetHandle implements Runnable {
 				e.printStackTrace();
 			}
 		}
+		return null;
+
 	}
 	/**
 	 * method
 	 */
+
 }

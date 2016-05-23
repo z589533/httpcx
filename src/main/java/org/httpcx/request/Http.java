@@ -27,13 +27,14 @@ public interface Http extends HttpBase {
 	/**
 	 * 异步无回调GET请求 火狐标准请求
 	 */
+	public void getAsynReq(final String url);
+	
+	/**
+	 * 异步无回调GET请求 
+	 */
 	public void getAsynReq(final String url, HttpAttribute attribute);
 
-	/**
-	 * 异步无回调GET请求
-	 */
-	public void getAsynReq(final String url);
-
+	
 	/**
 	 * 异步有回调POST请求
 	 * 
