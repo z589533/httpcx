@@ -2,7 +2,7 @@ package org.httpcx.test;
 
 import java.io.Serializable;
 
-import org.httpcx.request.Http;
+import org.httpcx.request.Httpcx;
 import org.httpcx.request.bean.HttpAttribute;
 import org.httpcx.request.client.HttpCxClient;
 
@@ -16,7 +16,7 @@ import org.httpcx.request.client.HttpCxClient;
  */
 public class HttpHandle implements Serializable {
 
-	Http client = new HttpCxClient();
+	Httpcx client = new HttpCxClient();
 	
 	public void httpRequest(String url) {
 		HttpAttribute attribute = HttpAttribute.custom().setConnectTimeout(1000).build();

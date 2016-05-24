@@ -1,4 +1,4 @@
-package org.httpcx.request.client;
+package org.httpcx.request.spring.client;
 
 import java.io.IOException;
 import java.io.InterruptedIOException;
@@ -52,32 +52,54 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * @date 2016年5月23日 下午2:19:50
+ * @date 2016年5月24日 上午11:27:32
  * @version 1.0
  * @describe
  * @author zhouchengzhuo
  * @parameter
  * @return
  */
-public class HttpCxClient implements Httpcx {
+public class HttpCxSpringClient implements Httpcx {
 
-	public final static Logger logger = LoggerFactory.getLogger(HttpCxClient.class);
+	public final static Logger logger = LoggerFactory.getLogger(HttpCxSpringClient.class);
 
-	ExecutorService executorService = Executors.newFixedThreadPool(DEFAULT_THREADCOUNT);
+	private String userAgent = DEFAULT_USER_AGENT;
 
-	private static void config(HttpAttribute attribute, HttpRequestBase httpRequestBase) {
-		httpRequestBase.setHeader("User-Agent", attribute.getUser_Agent());
-		httpRequestBase.setHeader("Accept", attribute.getAccept());
-		httpRequestBase.setHeader("Accept-Language", attribute.getAccept_Language());
-		httpRequestBase.setHeader("Accept-Charset", attribute.getAccept_Charset());
+	private String accept = DEFAULT_ACCEPT;
+
+	private String acceptLanguage = DEFAULT_ACCEPT_LANGUAGE;
+
+	private String acceptCharset = DEFAULT_ACCEPT_CHARSET;
+
+	private int connectTimeout = DEFAULT_CONNECT_TIMEOUT;
+
+	private String connection = DEFAULT_CONNECTION;
+
+	private String acceptEncoding = DEFAULT_ACCEPT_ENCODING;
+
+	private String cacheControl = DEFAULT_CACHE_CONTROL;
+
+	private int retryCount = RETRYCOUNT;
+
+	private String resultCharset = DEFAULTCHARSET;
+
+	private int threadCount = DEFAULT_THREADCOUNT;
+
+	ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
+
+	private void config(HttpRequestBase httpRequestBase) {
+		httpRequestBase.setHeader("User-Agent", getUserAgent());
+		httpRequestBase.setHeader("Accept", getAccept());
+		httpRequestBase.setHeader("Accept-Language", getAcceptLanguage());
+		httpRequestBase.setHeader("Accept-Charset", getAcceptCharset());
 		// 配置请求的超时设置
-		RequestConfig requestConfig = RequestConfig.custom().setConnectionRequestTimeout(attribute.getConnectTimeout())
-				.setConnectTimeout(attribute.getConnectTimeout()).setSocketTimeout(attribute.getConnectTimeout())
-				.build();
+		RequestConfig requestConfig = RequestConfig.custom().setConnectionRequestTimeout(getConnectTimeout())
+				.setConnectTimeout(getConnectTimeout()).setSocketTimeout(getConnectTimeout()).build();
 		httpRequestBase.setConfig(requestConfig);
 	}
 
-	public void postAsynReq(final String url, Map<String, String> maps) {
+	@Override
+	public void postAsynReq(String url, Map<String, String> maps) {
 		CloseableHttpClient closeableHttpClient = buildHttp(url);
 		long start = System.currentTimeMillis();
 		try {
@@ -88,10 +110,9 @@ public class HttpCxClient implements Httpcx {
 				pairs.add(new BasicNameValuePair(key, maps.get(key)));
 			}
 			httpPost.setEntity(new UrlEncodedFormEntity(pairs));
-			HttpAttribute attribute = HttpAttribute.custom().build();
-			HttpCxClient.config(attribute, httpPost);
-			executorService.execute(new AsynHttpPostHandle(closeableHttpClient, httpPost, countDownLatch,
-					attribute.getResult_Charset()));
+			config(httpPost);
+			executorService
+					.execute(new AsynHttpPostHandle(closeableHttpClient, httpPost, countDownLatch, getResultCharset()));
 			countDownLatch.await();
 			executorService.shutdown();
 		} catch (InterruptedException e) {
@@ -105,30 +126,27 @@ public class HttpCxClient implements Httpcx {
 		}
 		long end = System.currentTimeMillis();
 		logger.info("url=" + url + " waste of time=" + (end - start) + "ms");
+
 	}
 
+	@Override
 	public void postAsynReq(String url, Map<String, String> maps, HttpAttribute attribute) {
-		/**
-		 * 方法
-		 */
+		this.postAsynReq(url, maps);
+	}
+
+	@Override
+	public void getAsynReq(String url) {
 		CloseableHttpClient closeableHttpClient = buildHttp(url);
 		long start = System.currentTimeMillis();
 		try {
 			CountDownLatch countDownLatch = new CountDownLatch(1);
-			HttpPost httpPost = new HttpPost(url);
-			List<NameValuePair> pairs = new ArrayList<NameValuePair>();
-			for (String key : maps.keySet()) {
-				pairs.add(new BasicNameValuePair(key, maps.get(key)));
-			}
-			httpPost.setEntity(new UrlEncodedFormEntity(pairs));
-			HttpCxClient.config(attribute, httpPost);
-			executorService.execute(new AsynHttpPostHandle(closeableHttpClient, httpPost, countDownLatch,
-					attribute.getResult_Charset()));
+			HttpGet httpGet = new HttpGet(url);
+			config(httpGet);
+			executorService
+					.execute(new AsynHttpGetHandle(closeableHttpClient, httpGet, countDownLatch, getResultCharset()));
 			countDownLatch.await();
 			executorService.shutdown();
 		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		} finally {
 			logger.info("Thread:" + Thread.currentThread().getName() + ",time=" + System.currentTimeMillis()
@@ -136,53 +154,15 @@ public class HttpCxClient implements Httpcx {
 		}
 		long end = System.currentTimeMillis();
 		logger.info("url=" + url + " waste of time=" + (end - start) + "ms");
-
 	}
 
+	@Override
 	public void getAsynReq(String url, HttpAttribute attribute) {
-		CloseableHttpClient closeableHttpClient = buildHttp(url);
-		long start = System.currentTimeMillis();
-		try {
-
-			CountDownLatch countDownLatch = new CountDownLatch(1);
-			HttpGet httpGet = new HttpGet(url);
-			HttpCxClient.config(attribute, httpGet);
-			executorService.execute(
-					new AsynHttpGetHandle(closeableHttpClient, httpGet, countDownLatch, attribute.getResult_Charset()));
-			countDownLatch.await();
-			executorService.shutdown();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} finally {
-			logger.info("Thread:" + Thread.currentThread().getName() + ",time=" + System.currentTimeMillis()
-					+ ", all Thread finish wait....");
-		}
-		long end = System.currentTimeMillis();
-		logger.info("url=" + url + " waste of time=" + (end - start) + "ms");
+		// TODO Auto-generated method stub
+		this.getAsynReq(url);
 	}
 
-	public void getAsynReq(final String url) {
-		CloseableHttpClient closeableHttpClient = buildHttp(url);
-		long start = System.currentTimeMillis();
-		try {
-			CountDownLatch countDownLatch = new CountDownLatch(1);
-			HttpGet httpGet = new HttpGet(url);
-			HttpAttribute attribute = HttpAttribute.custom().build();
-			HttpCxClient.config(attribute, httpGet);
-			executorService.execute(
-					new AsynHttpGetHandle(closeableHttpClient, httpGet, countDownLatch, attribute.getResult_Charset()));
-			countDownLatch.await();
-			executorService.shutdown();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} finally {
-			logger.info("Thread:" + Thread.currentThread().getName() + ",time=" + System.currentTimeMillis()
-					+ ", all Thread finish wait....");
-		}
-		long end = System.currentTimeMillis();
-		logger.info("url=" + url + " waste of time=" + (end - start) + "ms");
-	}
-
+	@Override
 	public String postCallReq(String url, Map<String, String> maps) {
 		String info = null;
 		CloseableHttpClient closeableHttpClient = buildHttp(url);
@@ -195,10 +175,9 @@ public class HttpCxClient implements Httpcx {
 				pairs.add(new BasicNameValuePair(key, maps.get(key)));
 			}
 			httpPost.setEntity(new UrlEncodedFormEntity(pairs));
-			HttpAttribute attribute = HttpAttribute.custom().build();
-			HttpCxClient.config(attribute, httpPost);
-			Future<String> future = executorService.submit(
-					new AsynHttpPostCall(closeableHttpClient, httpPost, countDownLatch, attribute.getResult_Charset()));
+			config(httpPost);
+			Future<String> future = executorService
+					.submit(new AsynHttpPostCall(closeableHttpClient, httpPost, countDownLatch, getResultCharset()));
 			info = future.get();
 			countDownLatch.await();
 			executorService.shutdown();
@@ -217,6 +196,7 @@ public class HttpCxClient implements Httpcx {
 		return info;
 	}
 
+	@Override
 	public String getCallReq(String url) {
 		String info = null;
 		CloseableHttpClient closeableHttpClient = buildHttp(url);
@@ -224,10 +204,9 @@ public class HttpCxClient implements Httpcx {
 		try {
 			CountDownLatch countDownLatch = new CountDownLatch(1);
 			HttpGet httpGet = new HttpGet(url);
-			HttpAttribute attribute = HttpAttribute.custom().build();
-			HttpCxClient.config(attribute, httpGet);
-			Future<String> future = executorService.submit(
-					new AsynHttpGetCall(closeableHttpClient, httpGet, countDownLatch, attribute.getResult_Charset()));
+			config(httpGet);
+			Future<String> future = executorService
+					.submit(new AsynHttpGetCall(closeableHttpClient, httpGet, countDownLatch, getResultCharset()));
 			info = future.get();
 			countDownLatch.await();
 			executorService.shutdown();
@@ -246,63 +225,13 @@ public class HttpCxClient implements Httpcx {
 
 	@Override
 	public String postCallReq(String url, Map<String, String> maps, HttpAttribute attribute) {
-		String info = null;
-		CloseableHttpClient closeableHttpClient = buildHttp(url);
-		long start = System.currentTimeMillis();
-		try {
-			CountDownLatch countDownLatch = new CountDownLatch(1);
-			HttpPost httpPost = new HttpPost(url);
-			List<NameValuePair> pairs = new ArrayList<NameValuePair>();
-			for (String key : maps.keySet()) {
-				pairs.add(new BasicNameValuePair(key, maps.get(key)));
-			}
-			httpPost.setEntity(new UrlEncodedFormEntity(pairs));
-			HttpCxClient.config(attribute, httpPost);
-			Future<String> future = executorService.submit(
-					new AsynHttpPostCall(closeableHttpClient, httpPost, countDownLatch, attribute.getResult_Charset()));
-			info = future.get();
-			countDownLatch.await();
-			executorService.shutdown();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		} catch (ExecutionException e) {
-			e.printStackTrace();
-		} finally {
-			logger.info("Thread:" + Thread.currentThread().getName() + ",time=" + System.currentTimeMillis()
-					+ ", all Thread finish wait....");
-		}
-		long end = System.currentTimeMillis();
-		logger.info("url=" + url + " waste of time=" + (end - start) + "ms");
-		return info;
+		return this.postCallReq(url, maps);
 	}
 
 	@Override
 	public String getCallReq(String url, HttpAttribute attribute) {
-		String info = null;
-		CloseableHttpClient closeableHttpClient = buildHttp(url);
-		long start = System.currentTimeMillis();
-		try {
-			CountDownLatch countDownLatch = new CountDownLatch(1);
-			HttpGet httpGet = new HttpGet(url);
-			HttpCxClient.config(attribute, httpGet);
-			Future<String> future = executorService.submit(
-					new AsynHttpGetCall(closeableHttpClient, httpGet, countDownLatch, attribute.getResult_Charset()));
-			info = future.get();
-			countDownLatch.await();
-			executorService.shutdown();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch (ExecutionException e) {
-			e.printStackTrace();
-		} finally {
-			logger.info("Thread:" + Thread.currentThread().getName() + ",time=" + System.currentTimeMillis()
-					+ ", all Thread finish wait....");
-		}
-		long end = System.currentTimeMillis();
-		logger.info("url=" + url + " waste of time=" + (end - start) + "ms");
-		return info;
+		// TODO Auto-generated method stub
+		return this.getCallReq(url);
 	}
 
 	private CloseableHttpClient buildHttp(final String url) {
@@ -317,8 +246,8 @@ public class HttpCxClient implements Httpcx {
 		manager.setMaxPerRoute(new HttpRoute(httpHost), HTTP_MAXPERROUTE);
 		HttpRequestRetryHandler requestRetryHandler = new HttpRequestRetryHandler() {
 			public boolean retryRequest(IOException exception, int executionCount, HttpContext context) {
-				if (executionCount >= RETRYCOUNT) {
-					logger.error("retry count achieve:" + RETRYCOUNT + " have given up:" + url);
+				if (executionCount >= getRetryCount()) {
+					logger.error("retry count achieve:" + getRetryCount() + " have given up:" + url);
 					return false;
 				}
 				if (exception instanceof NoHttpResponseException) {
@@ -357,6 +286,94 @@ public class HttpCxClient implements Httpcx {
 		CloseableHttpClient closeableHttpClient = HttpClients.custom().setConnectionManager(manager)
 				.setRetryHandler(requestRetryHandler).build();
 		return closeableHttpClient;
+	}
+
+	public String getUserAgent() {
+		return userAgent;
+	}
+
+	public void setUserAgent(String userAgent) {
+		this.userAgent = userAgent;
+	}
+
+	public String getAccept() {
+		return accept;
+	}
+
+	public void setAccept(String accept) {
+		this.accept = accept;
+	}
+
+	public String getAcceptLanguage() {
+		return acceptLanguage;
+	}
+
+	public void setAcceptLanguage(String acceptLanguage) {
+		this.acceptLanguage = acceptLanguage;
+	}
+
+	public String getAcceptCharset() {
+		return acceptCharset;
+	}
+
+	public void setAcceptCharset(String acceptCharset) {
+		this.acceptCharset = acceptCharset;
+	}
+
+	public int getConnectTimeout() {
+		return connectTimeout;
+	}
+
+	public void setConnectTimeout(int connectTimeout) {
+		this.connectTimeout = connectTimeout;
+	}
+
+	public String getConnection() {
+		return connection;
+	}
+
+	public void setConnection(String connection) {
+		this.connection = connection;
+	}
+
+	public String getAcceptEncoding() {
+		return acceptEncoding;
+	}
+
+	public void setAcceptEncoding(String acceptEncoding) {
+		this.acceptEncoding = acceptEncoding;
+	}
+
+	public String getCacheControl() {
+		return cacheControl;
+	}
+
+	public void setCacheControl(String cacheControl) {
+		this.cacheControl = cacheControl;
+	}
+
+	public int getRetryCount() {
+		return retryCount;
+	}
+
+	public void setRetryCount(int retryCount) {
+		this.retryCount = retryCount;
+	}
+
+	public String getResultCharset() {
+		return resultCharset;
+	}
+
+	public void setResultCharset(String resultCharset) {
+		this.resultCharset = resultCharset;
+	}
+
+	public int getThreadCount() {
+		return threadCount;
+	}
+
+	public void setThreadCount(int threadCount) {
+		this.threadCount = threadCount;
 	}
 
 }
