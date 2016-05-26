@@ -12,7 +12,7 @@ import org.httpcx.request.bean.HttpAttribute;
  * @parameter
  * @return
  */
-public interface Http extends HttpBase {
+public interface Httpcx extends HttpBase {
 
 	/**
 	 * 异步无回调POST请求 火狐标准请求
@@ -20,7 +20,7 @@ public interface Http extends HttpBase {
 	public void postAsynReq(final String url, Map<String, String> maps);
 
 	/**
-	 * 异步无回调POST请求
+	 * 异步无回调POST请求 自定义头部
 	 */
 	public void postAsynReq(final String url, Map<String, String> maps, HttpAttribute attribute);
 
@@ -30,22 +30,36 @@ public interface Http extends HttpBase {
 	public void getAsynReq(final String url);
 	
 	/**
-	 * 异步无回调GET请求 
+	 * 异步无回调GET请求  自定义头部
 	 */
 	public void getAsynReq(final String url, HttpAttribute attribute);
 
 	
 	/**
-	 * 异步有回调POST请求
+	 * 异步有回调POST请求 火狐标准
 	 * 
 	 * @return
 	 */
 	public String postCallReq(final String url, Map<String, String> maps);
 
 	/**
-	 * 异步有回调GET请求
+	 * 异步有回调GET请求 火狐标准
 	 * 
 	 * @return
 	 */
 	public String getCallReq(final String url);
+	
+	/**
+	 * 异步有回调POST请求 火狐标准
+	 * 
+	 * @return
+	 */
+	public String postCallReq(final String url, Map<String, String> maps,HttpAttribute attribute);
+
+	/**
+	 * 异步有回调GET请求 火狐标准
+	 * 
+	 * @return
+	 */
+	public String getCallReq(final String url,HttpAttribute attribute);
 }

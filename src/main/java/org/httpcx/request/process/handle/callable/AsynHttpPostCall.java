@@ -26,11 +26,13 @@ public class AsynHttpPostCall implements Callable<String> {
 	private CountDownLatch countDownLatch;
 	private final CloseableHttpClient httpClient;
 	private final HttpPost httpPost;
-
-	public AsynHttpPostCall(CloseableHttpClient httpClient, HttpPost httpPost, CountDownLatch countDownLatch) {
+	private final String charset;
+	
+	public AsynHttpPostCall(CloseableHttpClient httpClient, HttpPost httpPost, CountDownLatch countDownLatch,String charset) {
 		this.httpClient = httpClient;
 		this.httpPost = httpPost;
 		this.countDownLatch = countDownLatch;
+		this.charset=charset;
 	};
 
 	public String call() throws Exception {
@@ -40,7 +42,7 @@ public class AsynHttpPostCall implements Callable<String> {
 		try {
 			response = httpClient.execute(httpPost, HttpClientContext.create());
 			HttpEntity entity = response.getEntity();
-			info = EntityUtils.toString(entity, HttpBase.DEFAULTCHARSET);
+			info = EntityUtils.toString(entity, charset);
 			EntityUtils.consume(entity);
 			return info;
 		} catch (Exception e) {

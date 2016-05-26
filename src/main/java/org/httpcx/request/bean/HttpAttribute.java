@@ -1,5 +1,7 @@
 package org.httpcx.request.bean;
 
+import org.httpcx.request.Httpcx;
+
 /**
  * @date 2016年5月23日 下午2:14:38
  * @version 1.0
@@ -13,21 +15,23 @@ public class HttpAttribute {
 	 * 默认火狐
 	 * method
 	 */
-	private String user_Agent="Mozilla/5.0 (Windows NT 6.1; WOW64; rv:46.0) Gecko/20100101 Firefox/46.0";
+	private String user_Agent=Httpcx.DEFAULT_USER_AGENT;
 
-	private String accept="*/*";
+	private String accept=Httpcx.DEFAULT_ACCEPT;
 
-	private String accept_Language="zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3";
+	private String accept_Language=Httpcx.DEFAULT_ACCEPT_LANGUAGE;
 
-	private String accept_Charset="ISO-8859-1,utf-8,UTF-8,gbk,gb2312;q=0.7,*;q=0.7";
+	private String accept_Charset=Httpcx.DEFAULT_ACCEPT_CHARSET;
 
-	private int connectTimeout = 5000;
+	private int connectTimeout = Httpcx.DEFAULT_CONNECT_TIMEOUT;
 
-	private String connection="keep-alive";
+	private String connection=Httpcx.DEFAULT_CONNECTION;
 	
-	private String accept_Encoding="gzip, deflate";
+	private String accept_Encoding=Httpcx.DEFAULT_ACCEPT_ENCODING;
 	
-	private String cache_Control="max-age=0";
+	private String cache_Control=Httpcx.DEFAULT_CACHE_CONTROL;
+	
+	private String result_Charset=Httpcx.DEFAULTCHARSET;
 	
 	public HttpAttribute() {
 		// TODO Auto-generated constructor stub
@@ -50,8 +54,6 @@ public class HttpAttribute {
 		this.accept_Charset = accept_Charset;
 		this.connectTimeout = connectTimeout;
 	}
-	
-	
 
 
 	public HttpAttribute(String user_Agent, String accept, String accept_Language, String accept_Charset,
@@ -70,6 +72,29 @@ public class HttpAttribute {
 	
 	
 	
+	public HttpAttribute(String user_Agent, String accept, String accept_Language, String accept_Charset,
+			int connectTimeout, String connection, String accept_Encoding, String cache_Control,
+			String result_Charset) {
+		super();
+		this.user_Agent = user_Agent;
+		this.accept = accept;
+		this.accept_Language = accept_Language;
+		this.accept_Charset = accept_Charset;
+		this.connectTimeout = connectTimeout;
+		this.connection = connection;
+		this.accept_Encoding = accept_Encoding;
+		this.cache_Control = cache_Control;
+		this.result_Charset = result_Charset;
+	}
+
+	public String getResult_Charset() {
+		return result_Charset;
+	}
+
+	public void setResult_Charset(String result_Charset) {
+		this.result_Charset = result_Charset;
+	}
+
 	public String getConnection() {
 		return connection;
 	}
@@ -155,13 +180,15 @@ public class HttpAttribute {
 		
 		private String cache_Control;
 
+		private String result_Charset;
+		
 		Builder() {
 			super();
 			// 设置默认参数
 		}
 
 		public HttpAttribute build() {
-			return new HttpAttribute(user_Agent, accept, accept_Language, accept_Charset, connectTimeout,connection,accept_Encoding,cache_Control);
+			return new HttpAttribute(user_Agent, accept, accept_Language, accept_Charset, connectTimeout,connection,accept_Encoding,cache_Control,result_Charset);
 		}
 
 		public Builder setUser_Agent(String user_Agent) {
@@ -203,6 +230,13 @@ public class HttpAttribute {
 			this.cache_Control = cache_Control;
 			return this;
 		}
+
+		public Builder setResult_Charset(String result_Charset) {
+			this.result_Charset = result_Charset;
+			return this;
+		}
+		
+		
 
 	}
 }

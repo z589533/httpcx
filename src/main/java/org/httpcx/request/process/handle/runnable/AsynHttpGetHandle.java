@@ -28,11 +28,13 @@ public class AsynHttpGetHandle implements Runnable {
 	private CountDownLatch countDownLatch;
 	private final CloseableHttpClient httpClient;
 	private final HttpGet httpGet;
+	private final String charset;
 
-	public AsynHttpGetHandle(CloseableHttpClient httpClient, HttpGet httpGet, CountDownLatch countDownLatch) {
+	public AsynHttpGetHandle(CloseableHttpClient httpClient, HttpGet httpGet, CountDownLatch countDownLatch,String charset) {
 		this.httpClient = httpClient;
 		this.httpGet = httpGet;
 		this.countDownLatch = countDownLatch;
+		this.charset=charset;
 	}
 
 	public void run() {
@@ -41,7 +43,7 @@ public class AsynHttpGetHandle implements Runnable {
 		try {
 			response = httpClient.execute(httpGet, HttpClientContext.create());
 			HttpEntity entity = response.getEntity();
-			String info = EntityUtils.toString(entity, HttpBase.DEFAULTCHARSET);
+			String info = EntityUtils.toString(entity, charset);
 			EntityUtils.consume(entity);
 			logger.info("Thread:" + Thread.currentThread().getName() + " info:" + info);
 		} catch (IOException e) {

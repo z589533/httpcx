@@ -25,9 +25,12 @@ public class AsynHttpGetCall implements Callable<String> {
 	private CountDownLatch countDownLatch;
 	private final CloseableHttpClient httpClient;
 	private final HttpGet httpGet;
+	private final String charset;
 
-	public AsynHttpGetCall(CloseableHttpClient httpClient, HttpGet httpGet, CountDownLatch countDownLatch) {
+	public AsynHttpGetCall(CloseableHttpClient httpClient, HttpGet httpGet, CountDownLatch countDownLatch,
+			String charset) {
 		this.httpClient = httpClient;
+		this.charset = charset;
 		this.httpGet = httpGet;
 		this.countDownLatch = countDownLatch;
 	}
@@ -39,7 +42,7 @@ public class AsynHttpGetCall implements Callable<String> {
 		try {
 			response = httpClient.execute(httpGet, HttpClientContext.create());
 			HttpEntity entity = response.getEntity();
-			info = EntityUtils.toString(entity, HttpBase.DEFAULTCHARSET);
+			info = EntityUtils.toString(entity, charset);
 			EntityUtils.consume(entity);
 			return info;
 		} catch (IOException e) {

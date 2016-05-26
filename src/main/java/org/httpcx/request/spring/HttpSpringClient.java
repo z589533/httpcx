@@ -1,6 +1,6 @@
 package org.httpcx.request.spring;
 
-import org.httpcx.request.Http;
+import org.httpcx.request.Httpcx;
 
 /** 
  * @date  2016年5月23日 下午2:17:58 
@@ -10,7 +10,7 @@ import org.httpcx.request.Http;
  * @parameter
  * @return
  */
-public interface HttpSpringClient extends Http {
+public interface HttpSpringClient extends Httpcx {
 	/**
 	 * method
 	 */
