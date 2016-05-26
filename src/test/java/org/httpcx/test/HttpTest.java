@@ -6,6 +6,11 @@ import org.httpcx.request.bean.HttpAttribute;
 import org.httpcx.request.client.HttpCxClient;
 import org.junit.Ignore;
 import org.junit.Test;
+
+import com.googlecode.asyn4j.core.handler.CacheAsynWorkHandler;
+import com.googlecode.asyn4j.core.handler.DefaultErrorAsynWorkHandler;
+import com.googlecode.asyn4j.service.AsynService;
+import com.googlecode.asyn4j.service.AsynServiceImpl;
 //
 //import com.googlecode.asyn4j.core.handler.CacheAsynWorkHandler;
 //import com.googlecode.asyn4j.core.handler.DefaultErrorAsynWorkHandler;
@@ -68,18 +73,18 @@ public class HttpTest {
 		System.out.println("zcz:" + info);
 	}
 
-//	@Test
-//	@Ignore
-//	public void asynHttpTest() {
-//		AsynService anycService = AsynServiceImpl.getService(300, 3000L, 100, 100, 1000);
-//		anycService.setWorkQueueFullHandler(new CacheAsynWorkHandler(100));
-//		anycService.setErrorAsynWorkHandler(new DefaultErrorAsynWorkHandler());
-//		anycService.init();
-//		for (int i = 0; i < 100; i++) {
-//			String url= "http://www.baidu.com/?sb=" + i;
-//			anycService.addWork(HttpHandle.class, "httpRequest", new Object[] {url },
-//					new RequestResult());
-//			//System.out.println(anycService.getRunStatInfo());
-//		}
-//	}
+	@Test
+	@Ignore
+	public void asynHttpTest() {
+		AsynService anycService = AsynServiceImpl.getService(300, 3000L, 100, 100, 1000);
+		anycService.setWorkQueueFullHandler(new CacheAsynWorkHandler(100));
+		anycService.setErrorAsynWorkHandler(new DefaultErrorAsynWorkHandler());
+		anycService.init();
+		for (int i = 0; i < 100; i++) {
+			String url= "http://www.baidu.com/?sb=" + i;
+			anycService.addWork(HttpHandle.class, "httpRequest", new Object[] {url },
+					new RequestResult());
+			//System.out.println(anycService.getRunStatInfo());
+		}
+	}
 }

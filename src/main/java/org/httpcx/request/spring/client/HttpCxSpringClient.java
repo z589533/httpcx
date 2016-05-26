@@ -41,12 +41,12 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HttpContext;
-import org.httpcx.request.Httpcx;
 import org.httpcx.request.bean.HttpAttribute;
 import org.httpcx.request.process.handle.callable.AsynHttpGetCall;
 import org.httpcx.request.process.handle.callable.AsynHttpPostCall;
 import org.httpcx.request.process.handle.runnable.AsynHttpGetHandle;
 import org.httpcx.request.process.handle.runnable.AsynHttpPostHandle;
+import org.httpcx.request.spring.HttpSpringClient;
 import org.httpcx.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,7 +59,7 @@ import org.slf4j.LoggerFactory;
  * @parameter
  * @return
  */
-public class HttpCxSpringClient implements Httpcx {
+public class HttpCxSpringClient implements HttpSpringClient {
 
 	public final static Logger logger = LoggerFactory.getLogger(HttpCxSpringClient.class);
 
